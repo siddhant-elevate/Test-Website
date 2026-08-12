@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  ::selection {
+    @apply bg-brand/20 text-ink dark:bg-brand-glow/25 dark:text-white;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink dark:bg-night dark:text-paper antialiased;
+    font-feature-settings: "ss01" on, "ss03" on;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand/70 ring-offset-2 ring-offset-paper dark:ring-brand-glow/70 dark:ring-offset-night;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-content {
+    @apply mx-auto w-full max-w-content px-6 md:px-10;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-widest2 text-brand dark:text-brand-glow;
+  }
+
+  .prose-editorial {
+    @apply text-[1.0625rem] leading-[1.85] text-ink-700 dark:text-paper-100/85;
+  }
+
+  .prose-editorial p + p {
+    @apply mt-6;
+  }
+
+  /* Styling for markdown report bodies rendered via dangerouslySetInnerHTML
+     inside .prose-editorial (see lib/data.ts + app/research/[slug]/page.tsx).
+     These reproduce the exact look the old hand-authored sections used,
+     so a report's visual output never depends on which elements the
+     author happened to reach for in markdown. */
+  .prose-editorial a {
+    @apply font-medium text-ink underline decoration-black/25 underline-offset-2 transition-colors duration-300 hover:text-brand hover:decoration-brand/50 dark:text-white dark:decoration-white/25 dark:hover:text-brand-glow dark:hover:decoration-brand-glow/50;
+  }
+
+  .prose-editorial strong {
+    @apply font-medium text-ink dark:text-white;
+  }
+
+  .prose-editorial h3 {
+    @apply mt-10 font-display text-[19px] font-medium text-ink dark:text-white;
+  }
+
+  .prose-editorial ul,
+  .prose-editorial ol {
+    @apply my-6 space-y-2.5 pl-5;
+  }
+
+  .prose-editorial ul {
+    @apply list-disc marker:text-ink-400 dark:marker:text-paper-100/40;
+  }
+
+  .prose-editorial ol {
+    @apply list-decimal marker:text-ink-400 dark:marker:text-paper-100/40;
+  }
+
+  .prose-editorial blockquote {
+    @apply my-8 border-l-2 border-brass pl-6 font-display text-[21px] italic leading-snug text-ink dark:border-brass-light dark:text-white/90 md:text-[24px];
+  }
+
+  .prose-editorial blockquote p {
+    @apply mt-0;
+  }
+
+  .prose-editorial blockquote p::before {
+    content: "\201C";
+  }
+
+  .prose-editorial blockquote p::after {
+    content: "\201D";
+  }
+
+  .card-surface {
+    @apply bg-white dark:bg-night-700 border border-black/5 dark:border-night-border rounded-2xl shadow-card dark:shadow-card-dark;
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Raw keyframes for the SignatureLine component, which sets these via
+   inline style.animation rather than a Tailwind animate-* utility, so
+   they must exist unconditionally rather than being tree-shaken. */
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
