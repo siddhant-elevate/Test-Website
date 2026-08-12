@@ -7,11 +7,35 @@ import SignatureLine from "./SignatureLine";
 export default function Newsletter() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
-    setSubmitted(true);
+    if (!email.trim() || loading) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -56,12 +80,17 @@ export default function Newsletter() {
                 />
                 <button
                   type="submit"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-[14.5px] font-medium text-white transition-all duration-300 hover:bg-brand dark:bg-white dark:text-ink dark:hover:bg-brand-glow dark:hover:text-white"
+                  disabled={loading}
+                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-[14.5px] font-medium text-white transition-all duration-300 hover:bg-brand disabled:opacity-60 dark:bg-white dark:text-ink dark:hover:bg-brand-glow dark:hover:text-white"
                 >
-                  Subscribe
+                  {loading ? "Subscribing…" : "Subscribe"}
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </button>
               </form>
+            )}
+
+            {error && (
+              <p className="mt-4 text-[13px] text-red-500">{error}</p>
             )}
 
             <p className="mt-5 text-[12px] text-ink-400 dark:text-paper-100/35">
